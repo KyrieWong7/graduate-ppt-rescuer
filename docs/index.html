@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>A Click is All You Need — Demo Slides</title>
+<style>
+  :root {
+    --deep-blue: #001a33;
+    --mid-blue: #003366;
+    --light-blue: #0055a5;
+    --gold: #c8a84b;
+    --gold-light: #e8c86b;
+    --white: #f0f4f8;
+    --dim: #8ba5c0;
+    --surface: #071e36;
+    --card: #0a2540;
+    --shadow: rgba(0,0,0,0.6);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Georgia', 'Times New Roman', serif;
+    background: var(--deep-blue);
+    color: var(--white);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  /* ── Progress bar ── */
+  #progress-bar {
+    position: fixed;
+    top: 0; left: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--gold), var(--gold-light));
+    width: 0%;
+    z-index: 1000;
+    transition: width 0.35s cubic-bezier(.4,0,.2,1);
+    box-shadow: 0 0 8px var(--gold);
+  }
+
+  /* ── Header ── */
+  header {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    height: 52px;
+    background: rgba(0,10,26,0.96);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(200,168,75,0.25);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 24px;
+    z-index: 100;
+  }
+
+  .header-left {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .logo-text {
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    color: var(--white);
+  }
+
+  .logo-text span {
+    color: var(--gold);
+  }
+
+  .divider {
+    width: 1px;
+    height: 20px;
+    background: rgba(200,168,75,0.3);
+  }
+
+  #slide-counter {
+    font-family: 'Courier New', monospace;
+    font-size: 13px;
+    color: var(--dim);
+    letter-spacing: 0.08em;
+    min-width: 52px;
+  }
+
+  .header-right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-decoration: none;
+    cursor: pointer;
+    border: none;
+    transition: all 0.2s;
+  }
+
+  .btn-gold {
+    background: var(--gold);
+    color: var(--deep-blue);
+  }
+  .btn-gold:hover {
+    background: var(--gold-light);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 16px rgba(200,168,75,0.4);
+  }
+
+  .btn-outline {
+    background: transparent;
+    color: var(--dim);
+    border: 1px solid rgba(139,165,192,0.35);
+  }
+  .btn-outline:hover {
+    color: var(--white);
+    border-color: rgba(200,168,75,0.5);
+  }
+
+  /* ── Main stage ── */
+  #stage {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 72px 0 140px;
+    position: relative;
+  }
+
+  /* Navigation arrows */
+  .nav-arrow {
+    position: fixed;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 48px;
+    height: 80px;
+    background: rgba(0,26,51,0.7);
+    border: 1px solid rgba(200,168,75,0.2);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 50;
+    transition: all 0.2s;
+    backdrop-filter: blur(8px);
+  }
+  .nav-arrow:hover {
+    background: rgba(0,51,102,0.9);
+    border-color: var(--gold);
+    box-shadow: 0 0 16px rgba(200,168,75,0.25);
+  }
+  .nav-arrow:active { transform: translateY(-50%) scale(0.96); }
+  #arrow-prev { left: 16px; }
+  #arrow-next { right: 16px; }
+
+  .arrow-icon {
+    width: 20px;
+    height: 20px;
+    border-top: 2.5px solid var(--gold);
+    border-right: 2.5px solid var(--gold);
+  }
+  .arrow-left  { transform: rotate(-135deg) translateX(-2px); }
+  .arrow-right { transform: rotate(45deg) translateX(-2px); }
+
+  /* Slide frame */
+  #slide-frame {
+    position: relative;
+    width: min(900px, calc(100vw - 120px));
+  }
+
+  .slide-wrapper {
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    display: flex;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.4s cubic-bezier(.4,0,.2,1);
+    pointer-events: none;
+  }
+  .slide-wrapper.active {
+    position: relative;
+    opacity: 1;
+    pointer-events: auto;
+  }
+  .slide-wrapper.exit { opacity: 0; }
+
+  .slide-img {
+    width: 100%;
+    border-radius: 10px;
+    box-shadow:
+      0 2px 8px var(--shadow),
+      0 8px 32px rgba(0,0,0,0.5),
+      0 0 0 1px rgba(200,168,75,0.12);
+    display: block;
+  }
+
+  /* Slide number badge */
+  .slide-badge {
+    position: absolute;
+    bottom: 14px;
+    right: 18px;
+    background: rgba(0,10,26,0.85);
+    border: 1px solid rgba(200,168,75,0.35);
+    border-radius: 20px;
+    padding: 3px 10px;
+    font-family: 'Courier New', monospace;
+    font-size: 11px;
+    color: var(--gold);
+    letter-spacing: 0.06em;
+  }
+
+  /* ── Filmstrip ── */
+  #filmstrip-bar {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    height: 100px;
+    background: rgba(0,6,18,0.96);
+    border-top: 1px solid rgba(200,168,75,0.2);
+    backdrop-filter: blur(16px);
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+    z-index: 100;
+  }
+
+  #filmstrip {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0 20px;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    scrollbar-width: none;
+    width: 100%;
+  }
+  #filmstrip::-webkit-scrollbar { display: none; }
+
+  .thumb {
+    flex-shrink: 0;
+    width: 120px;
+    cursor: pointer;
+    border-radius: 5px;
+    overflow: hidden;
+    border: 2px solid transparent;
+    transition: all 0.22s;
+    opacity: 0.55;
+    position: relative;
+  }
+  .thumb:hover { opacity: 0.85; border-color: rgba(200,168,75,0.5); }
+  .thumb.active {
+    opacity: 1;
+    border-color: var(--gold);
+    box-shadow: 0 0 12px rgba(200,168,75,0.4);
+  }
+
+  .thumb img { width: 100%; display: block; border-radius: 3px; }
+
+  .thumb-num {
+    position: absolute;
+    bottom: 3px; right: 5px;
+    font-family: 'Courier New', monospace;
+    font-size: 9px;
+    color: var(--gold);
+    opacity: 0.85;
+  }
+
+  /* Keyboard hint */
+  #key-hint {
+    position: fixed;
+    bottom: 108px;
+    right: 20px;
+    font-size: 11px;
+    color: rgba(139,165,192,0.5);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .kbd {
+    display: inline-block;
+    padding: 1px 6px;
+    border: 1px solid rgba(139,165,192,0.3);
+    border-radius: 3px;
+    font-family: 'Courier New', monospace;
+    font-size: 10px;
+    color: rgba(139,165,192,0.6);
+  }
+
+  /* ── Responsive ── */
+  @media (max-width: 768px) {
+    #filmstrip-bar { height: 72px; }
+    .thumb { width: 80px; }
+    #stage { padding-bottom: 100px; }
+    .nav-arrow { width: 36px; height: 60px; }
+    #key-hint { display: none; }
+    .logo-text .subtitle { display: none; }
+  }
+
+  /* Fullscreen overlay hint */
+  #fs-hint {
+    position: fixed;
+    top: 62px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(200,168,75,0.12);
+    border: 1px solid rgba(200,168,75,0.3);
+    border-radius: 20px;
+    padding: 4px 14px;
+    font-size: 11px;
+    color: var(--gold);
+    opacity: 1;
+    transition: opacity 1s;
+    pointer-events: none;
+    z-index: 200;
+  }
+</style>
+</head>
+<body>
+
+<div id="progress-bar"></div>
+
+<header>
+  <div class="header-left">
+    <div class="logo-text">
+      <span>A Click</span> is All You Need
+      <span class="subtitle" style="color:var(--dim);font-weight:400;margin-left:8px;font-size:12px;">· Demo Slides</span>
+    </div>
+    <div class="divider"></div>
+    <div id="slide-counter">1 / 18</div>
+  </div>
+  <div class="header-right">
+    <a class="btn btn-outline" href="https://github.com/KyrieWong7/graduate-ppt-rescuer" target="_blank">
+      <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+      GitHub
+    </a>
+    <a class="btn btn-gold" href="../demo/slides.pdf" target="_blank">
+      ↓ PDF
+    </a>
+  </div>
+</header>
+
+<main id="stage">
+  <button class="nav-arrow" id="arrow-prev" aria-label="上一页">
+    <div class="arrow-icon arrow-left"></div>
+  </button>
+
+  <div id="slide-frame"></div>
+
+  <button class="nav-arrow" id="arrow-next" aria-label="下一页">
+    <div class="arrow-icon arrow-right"></div>
+  </button>
+</main>
+
+<div id="key-hint">
+  <span class="kbd">←</span>
+  <span class="kbd">→</span>
+  <span style="margin-left:4px;">navigate</span>
+  <span style="margin:0 6px;color:rgba(139,165,192,0.3)">|</span>
+  <span class="kbd">F</span>
+  <span>fullscreen</span>
+</div>
+
+<div id="filmstrip-bar">
+  <div id="filmstrip"></div>
+</div>
+
+<div id="fs-hint">Press F for fullscreen · 按 F 全屏</div>
+
+<script>
+const TOTAL = 18;
+const slides = Array.from({length: TOTAL}, (_, i) => `slides/slide-${String(i+1).padStart(2,'0')}.png`);
+
+let current = 0;
+let isAnimating = false;
+
+const frame = document.getElementById('slide-frame');
+const counter = document.getElementById('slide-counter');
+const progressBar = document.getElementById('progress-bar');
+const filmstrip = document.getElementById('filmstrip');
+const fsHint = document.getElementById('fs-hint');
+
+// Build slide wrappers
+slides.forEach((src, i) => {
+  const wrapper = document.createElement('div');
+  wrapper.className = 'slide-wrapper' + (i === 0 ? ' active' : '');
+  wrapper.dataset.index = i;
+  const img = document.createElement('img');
+  img.className = 'slide-img';
+  img.src = src;
+  img.alt = `Slide ${i+1}`;
+  img.loading = i < 3 ? 'eager' : 'lazy';
+  const badge = document.createElement('div');
+  badge.className = 'slide-badge';
+  badge.textContent = `${i+1} / ${TOTAL}`;
+  wrapper.appendChild(img);
+  wrapper.appendChild(badge);
+  frame.appendChild(wrapper);
+});
+
+// Build filmstrip
+slides.forEach((src, i) => {
+  const thumb = document.createElement('div');
+  thumb.className = 'thumb' + (i === 0 ? ' active' : '');
+  thumb.dataset.index = i;
+  const img = document.createElement('img');
+  img.src = src;
+  img.alt = `Slide ${i+1}`;
+  img.loading = 'lazy';
+  const num = document.createElement('div');
+  num.className = 'thumb-num';
+  num.textContent = i + 1;
+  thumb.appendChild(img);
+  thumb.appendChild(num);
+  thumb.addEventListener('click', () => goTo(i));
+  filmstrip.appendChild(thumb);
+});
+
+function updateUI() {
+  counter.textContent = `${current + 1} / ${TOTAL}`;
+  progressBar.style.width = `${((current + 1) / TOTAL) * 100}%`;
+
+  // Slides
+  document.querySelectorAll('.slide-wrapper').forEach((w, i) => {
+    w.classList.toggle('active', i === current);
+  });
+
+  // Thumbnails
+  document.querySelectorAll('.thumb').forEach((t, i) => {
+    t.classList.toggle('active', i === current);
+  });
+
+  // Scroll filmstrip to keep active thumb visible
+  const activeThumb = filmstrip.children[current];
+  if (activeThumb) {
+    activeThumb.scrollIntoView({behavior: 'smooth', block: 'nearest', inline: 'center'});
+  }
+}
+
+function goTo(index, dir) {
+  if (isAnimating || index === current) return;
+  if (index < 0 || index >= TOTAL) return;
+  isAnimating = true;
+  current = index;
+  updateUI();
+  setTimeout(() => { isAnimating = false; }, 420);
+}
+
+function prev() { goTo(current - 1); }
+function next() { goTo(current + 1); }
+
+document.getElementById('arrow-prev').addEventListener('click', prev);
+document.getElementById('arrow-next').addEventListener('click', next);
+
+// Keyboard
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')    { e.preventDefault(); prev(); }
+  if (e.key === 'ArrowRight' || e.key === 'ArrowDown')  { e.preventDefault(); next(); }
+  if (e.key === 'Home') { e.preventDefault(); goTo(0); }
+  if (e.key === 'End')  { e.preventDefault(); goTo(TOTAL - 1); }
+  if (e.key === 'f' || e.key === 'F') {
+    if (!document.fullscreenElement) document.documentElement.requestFullscreen?.();
+    else document.exitFullscreen?.();
+  }
+});
+
+// Touch/swipe
+let touchStartX = 0;
+document.addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX; }, {passive: true});
+document.addEventListener('touchend', e => {
+  const dx = e.changedTouches[0].clientX - touchStartX;
+  if (Math.abs(dx) > 50) dx < 0 ? next() : prev();
+}, {passive: true});
+
+// Fade out fs-hint
+setTimeout(() => { fsHint.style.opacity = '0'; }, 3000);
+
+// Init
+updateUI();
+</script>
+</body>
+</html>

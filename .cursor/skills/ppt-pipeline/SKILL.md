@@ -88,22 +88,141 @@ cp templates/script-template.tex projects/presentations/[slug]/script.tex
 
 ---
 
+## 阶段 4.5 — 预编译预检 Pre-Compile Preflight
+
+```
+目标：在编译前排除已知致命问题，TikZ 绘图溢出是重点
+```
+
+**通用检查**（任一失败则暂停报告）：
+
+```bash
+# 1. 检查 config.tex 存在
+[ -f config.tex ] || echo "ERROR: MISSING config.tex"
+
+# 2. 检查 XeLaTeX 可用
+which xelatex || echo "ERROR: XeLaTeX not found"
+
+# 3. 提取并验证所有图片引用路径
+grep -oP '\\includegraphics(?:\[.*?\])?\{\K[^}]+' slides.tex | while read f; do
+  [ -f "images/$f" ] || echo "WARNING: missing image: $f → replace with \\fbox{\\tiny [$f]}"
+done
+```
+
+**TikZ 静态扫描**（grep slides.tex，输出警告供人工确认）：
+
+```bash
+# 4. 检测无 text width 约束的裸 \node（在 column 内极易溢出）
+grep -n '\\node\[' slides.tex | grep -v 'text width' | \
+  grep -v 'minimum width' | echo "WARNING: unconstrained nodes (lines above)"
+
+# 5. 检测绝对坐标超出安全范围
+#    单列内：x > 5.5cm 危险；全宽：x > 11cm 危险
+grep -nP 'at\s*\(\s*-?[\d.]+\s*,' slides.tex | \
+  awk -F'[( ,]' '{x=$3+0; if(x>5.5||x<-5.5) print NR": x="x" cm — check column width"}'
+
+# 6. column 内 \includegraphics 应使用 \linewidth 而非 \textwidth
+grep -n 'includegraphics.*\\textwidth' slides.tex && \
+  echo "WARNING: use \\linewidth inside columns, not \\textwidth"
+
+# 7. overlay 节点未用 opacity 包裹可能遮盖正文
+grep -n 'remember picture.*overlay' slides.tex | while read line; do
+  echo "INFO: overlay tikzpicture — ensure large nodes use opacity"
+done
+```
+
+---
+
 ## 阶段 5 — 首次编译
 
 ```
 目标：确认 slides.tex 无编译错误
 ```
 
+**编译失败恢复流程**（H3 钩子）：
+
 ```bash
-cd projects/presentations/[slug]
 xelatex -interaction=nonstopmode slides.tex
-xelatex -interaction=nonstopmode slides.tex  # 第二遍
+EXIT=$?
+
+if [ $EXIT -ne 0 ]; then
+  echo "=== COMPILE FAILED — last 40 lines of log ==="
+  tail -40 slides.log
+
+  # 定位 TikZ 专项错误
+  if grep -q "Giving up on this path" slides.log; then
+    echo "TikZ PATH ERROR: check tikzpicture — separate \\fill and \\node with semicolons"
+  fi
+  if grep -q "Not allowed in LR mode" slides.log; then
+    echo "LR MODE ERROR: tikzpicture contains \\\\ or bare tabular — wrap in minipage or use text width=Xcm"
+  fi
+  if grep -q "Undefined control sequence" slides.log; then
+    echo "UNDEFINED CMD: check \\EN, \\sectag, \\cluetag are in preamble"
+  fi
+  if grep -q "File.*not found" slides.log; then
+    echo "MISSING FILE: add \\usepackage or check \\graphicspath"
+  fi
+
+  echo "Attempting one retry after targeted fix..."
+  # [Agent: apply fix, then:]
+  xelatex -interaction=nonstopmode slides.tex || \
+    echo "RETRY FAILED — stop and report to user. Max 1 retry."
+fi
+```
+
+```bash
+xelatex -interaction=nonstopmode slides.tex  # 第二遍（生成正确交叉引用）
+```
+
+---
+
+## 阶段 5.5 — 编译后验证 Post-Compile Validation
+
+```
+目标：TikZ 溢出专项验证，阻断重大问题进入审查阶段
+```
+
+```bash
+# 1. PDF 基础检查
+[ -f slides.pdf ] && [ $(stat -f%z slides.pdf) -gt 20000 ] || echo "ERROR: slides.pdf missing or too small"
+
+# 2. 页数验证
+PAGES=$(pdfinfo slides.pdf | grep Pages | awk '{print $2}')
+echo "Pages: $PAGES (expected: [REQUIRED])"
+
+# 3. Overfull \hbox 分级报告（TikZ 水平溢出主要来源）
+grep "Overfull \\\\hbox" slides.log | while read line; do
+  PT=$(echo "$line" | grep -oP '[\d.]+(?=pt too wide)')
+  if (( $(echo "$PT > 20" | bc -l) )); then
+    echo "CRITICAL hbox overflow ${PT}pt — must fix before review: $line"
+  elif (( $(echo "$PT > 5" | bc -l) )); then
+    echo "WARNING hbox overflow ${PT}pt — $line"
+  fi
+done
+
+# 4. Overfull \vbox（TikZ 纵向溢出，内容被截断的主要原因）
+grep "Overfull \\\\vbox" slides.log | while read line; do
+  PT=$(echo "$line" | grep -oP '[\d.]+(?=pt too high)')
+  (( $(echo "$PT > 3" | bc -l) )) && echo "WARNING vbox overflow ${PT}pt — add [shrink=N] to frame: $line"
+done
+
+# 5. TikZ 致命警告专项检索
+grep "Giving up on this path" slides.log && \
+  echo "TikZ FIX: path error — separate \\fill and \\node; check each semicolon"
+grep "undefined" slides.log | grep -i tikz && \
+  echo "TikZ FIX: undefined node reference — declare coordinate before use"
+
+# 6. LR mode 错误（tikzpicture 内含换行符或表格）
+grep "Not allowed in LR mode" slides.log && \
+  echo "TikZ FIX: remove \\\\ inside node content; use text width + align=center instead"
+
+echo "=== Validation complete. CRITICAL issues block Stage 6. ==="
 ```
 
 检查：
 - `slides.pdf` 存在
 - 页数符合需求
-- 无 `! Error` 行（`Overfull \hbox` 警告可接受，记录备查）
+- 无 `! Error` 行；`Overfull \hbox > 20pt` 为阻断级，必须修复后进入阶段 6
 
 ---
 

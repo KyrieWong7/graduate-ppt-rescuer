@@ -12,8 +12,26 @@
 [![Beamer](https://img.shields.io/badge/Format-Beamer-orange)](https://ctan.org/pkg/beamer)
 [![Cursor](https://img.shields.io/badge/IDE-Cursor-black?logo=cursor)](https://cursor.sh)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green)](LICENSE)
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-▶%20Slide%20Viewer-c8a84b?style=flat&logo=github)](https://kyriewong7.github.io/graduate-ppt-rescuer/)
 
 > *For every grad student who has ever stared at a blank PowerPoint at 11pm.*
+
+### Demo Preview — 点击查看可翻页演示
+
+<table>
+<tr>
+<td><a href="https://kyriewong7.github.io/graduate-ppt-rescuer/"><img src="docs/slides/slide-01.png" alt="Slide 1: Cover" width="100%"/></a></td>
+<td><a href="https://kyriewong7.github.io/graduate-ppt-rescuer/"><img src="docs/slides/slide-09.png" alt="Slide 9: Plan Mode Intake" width="100%"/></a></td>
+<td><a href="https://kyriewong7.github.io/graduate-ppt-rescuer/"><img src="docs/slides/slide-18.png" alt="Slide 18: Ending" width="100%"/></a></td>
+</tr>
+<tr>
+<td align="center"><sub>封面 Cover</sub></td>
+<td align="center"><sub>需求摄入 Intake</sub></td>
+<td align="center"><sub>结语 Ending</sub></td>
+</tr>
+</table>
+
+**[→ Open Interactive Viewer (可翻页)](https://kyriewong7.github.io/graduate-ppt-rescuer/)** | **[→ Download PDF](demo/slides.pdf)**
 
 </div>
 

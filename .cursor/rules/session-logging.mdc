@@ -1,0 +1,24 @@
+---
+description: Keep structured session logs for long-running academic tasks.
+alwaysApply: true
+---
+
+# Session Logging
+
+Maintain logs in `quality_reports/session_logs/` for substantive tasks.
+
+## Log at Three Moments
+
+1. After plan approval
+2. After each major module milestone
+3. At the end of the session
+
+## Minimum Contents
+
+- current goal
+- files changed
+- verification completed
+- open blockers
+- next action
+
+Use `templates/session-log.md` when creating a new log.

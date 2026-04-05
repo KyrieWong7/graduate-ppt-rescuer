@@ -1,0 +1,28 @@
+---
+description: Require specs and plans before non-trivial academic work.
+alwaysApply: true
+---
+
+# Plan-First Workflow
+
+For non-trivial tasks, do not jump straight into execution.
+
+## Protocol
+
+1. Read `AGENTS.md` and relevant `MEMORY.md` entries.
+2. If the task is ambiguous, create a requirements spec in `quality_reports/specs/`.
+3. Save the plan in `quality_reports/plans/`.
+4. Wait for approval before implementation.
+5. Start a session log in `quality_reports/session_logs/`.
+
+## Use a Requirements Spec When
+
+- task type is `A`, `B`, `C`, or `D`
+- the request touches multiple modules
+- the deliverable is a full paper, replication package, or presentation
+- source materials are incomplete or mixed
+
+## Skip Only When
+
+- the task is a simple, unambiguous single-file fix
+- no routing or version decision is required

@@ -1,0 +1,274 @@
+%% ============================================================
+%%  研究生PPT汇报解救器 · Beamer 幻灯片模板
+%%  引擎：XeLaTeX（必须，不支持 pdflatex）
+%%  编译：xelatex -interaction=nonstopmode slides.tex（两遍）
+%% ============================================================
+\documentclass[aspectratio=169,10pt]{beamer}
+
+%% ── 中英文字体配置 ───────────────────────────────────────────
+\usepackage[UTF8,scheme=plain]{ctex}
+\setCJKsansfont{Kaiti SC}       %% 中文：楷体（macOS 系统自带）
+\setCJKmainfont{Kaiti SC}       %% Windows/Linux：改为对应楷体字体名
+\setsansfont{Times New Roman}   %% 英文（Beamer 默认用 sans-serif）
+\setmainfont{Times New Roman}
+
+%% ── 主题与配色 ───────────────────────────────────────────────
+\usetheme{Boadilla}
+
+%% 自定义颜色（可按需调整 RGB 值）
+\definecolor{deepblue}{RGB}{0,52,102}    %% 主色：深蓝
+\definecolor{accent}{RGB}{196,72,49}     %% 强调色：砖红
+\definecolor{lightbg}{RGB}{240,245,252}  %% 浅背景蓝
+\definecolor{gold}{RGB}{180,140,40}      %% 金色（用于关键引言）
+\definecolor{darkgray}{RGB}{60,60,60}    %% 深灰
+
+\usecolortheme[named=deepblue]{structure}
+\setbeamercolor{frametitle}{bg=deepblue,fg=white}
+\setbeamercolor{alerted text}{fg=accent}
+\setbeamercolor{block title}{bg=deepblue!12,fg=deepblue}
+\setbeamercolor{block body}{bg=deepblue!4}
+\setbeamercolor{block title alerted}{bg=accent!12,fg=accent}
+\setbeamercolor{block body alerted}{bg=accent!4}
+\setbeamercolor{block title example}{bg=teal!15,fg=teal!70!black}
+\setbeamercolor{block body example}{bg=teal!5}
+
+%% ── 字号设置 ─────────────────────────────────────────────────
+\setbeamerfont{frametitle}{series=\bfseries,size=\normalsize}
+\setbeamerfont{block title}{series=\bfseries,size=\small}
+\setbeamerfont{title}{size=\LARGE,series=\bfseries}
+\setbeamerfont{subtitle}{size=\large,series=\mdseries}
+\setbeamerfont{author}{size=\small,series=\mdseries}
+\setbeamerfont{institute}{size=\footnotesize,series=\mdseries}
+\setbeamerfont{date}{size=\footnotesize,series=\mdseries}
+\setbeamertemplate{navigation symbols}{}
+
+%% ── 自定义页脚 ───────────────────────────────────────────────
+%% 左侧：课程名称；右侧：页码
+\setbeamertemplate{footline}{%
+  \leavevmode%
+  \hbox{%
+    \begin{beamercolorbox}[wd=.72\paperwidth,ht=2.3ex,dp=1ex,leftskip=.4cm]{structure}%
+      \usebeamerfont{footline}\footnotesize\color{deepblue!70}%
+      课程名称 \textbullet{} 章节标题%   ← 修改为实际课程和章节
+    \end{beamercolorbox}%
+    \begin{beamercolorbox}[wd=.28\paperwidth,ht=2.3ex,dp=1ex,rightskip=.4cm,right]{structure}%
+      \usebeamerfont{footline}\footnotesize\color{deepblue!70}%
+      \insertframenumber\,/\,\inserttotalframenumber%
+    \end{beamercolorbox}}%
+  \vskip0pt}
+
+%% ── 宏包 ─────────────────────────────────────────────────────
+\usepackage{booktabs}
+\usepackage{tikz}
+\usetikzlibrary{positioning,arrows.meta,shapes.geometric,shapes.misc,calc,shadows}
+\usepackage{amsmath}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{xcolor}
+\usepackage{graphicx}
+\graphicspath{{images/}}    %% 图片统一放在 images/ 子目录
+
+%% ── 自定义宏 ─────────────────────────────────────────────────
+%% \EN{English Term} — 英文术语斜体标注
+\newcommand{\EN}[1]{\textit{#1}}
+
+%% \sectag{Tag} — 浅色小字节标签（放在 frametitle 后）
+\newcommand{\sectag}[1]{\textmd{\small\normalfont\textcolor{deepblue!60}{#1}}}
+
+%% \cluetag{Tag} — 居中强调标签
+\newcommand{\cluetag}[1]{%
+  \begin{center}
+    \footnotesize\textcolor{accent}{\textbf{#1}}
+  \end{center}}
+
+%% ── 封面信息 ─────────────────────────────────────────────────
+\title[短标题]{汇报完整标题}              %% ← 修改
+\subtitle{Subtitle in English}           %% ← 修改（无则删去）
+\author[汇报人]{%
+  \textbf{汇报人：姓名}\\[4pt]
+  {\footnotesize 小组成员：成员1 \textbullet{} 成员2 \textbullet{} 成员3}}
+\institute{课程名称\\
+  \footnotesize 参考文献：作者, \textit{书名}, 章节}
+\date{年份 年 月份 月}
+
+%% ============================================================
+\begin{document}
+
+%% ── 封面页 ───────────────────────────────────────────────────
+{
+\setbeamercolor{background canvas}{bg=lightbg}
+\begin{frame}[c]
+  \titlepage
+  \vspace{2pt}
+  \begin{center}
+    \textcolor{gold}{\rule{0.618\textwidth}{0.6pt}}\\[5pt]
+    \scriptsize\textcolor{deepblue!60}{课程名称 \textbullet{} 课堂汇报}\\[3pt]
+    \scriptsize\textit{"在这里放一句点题的引言。"}
+  \end{center}
+\end{frame}
+}
+
+%% ── 第2页：钩子/引入 ─────────────────────────────────────────
+\begin{frame}{引入：一个思想实验 \sectag{Hook}}
+  \begin{columns}[T]
+    \begin{column}{0.52\textwidth}
+      \begin{block}{场景 A \EN{Scenario A}}
+        \footnotesize 描述场景 A……\\[2pt]
+        结果：\textbf{可预测}
+      \end{block}
+      \vspace{4pt}
+      \begin{block}{场景 B \EN{Scenario B}}
+        \footnotesize 描述场景 B……\\[2pt]
+        结果：\textbf{不确定}
+      \end{block}
+      \vspace{4pt}
+      \begin{alertblock}{\small 核心问题}
+        \footnotesize 为什么同样的逻辑，结论不同？
+      \end{alertblock}
+    \end{column}
+    \begin{column}{0.44\textwidth}
+      \centering
+      %% 放一张相关图片
+      \includegraphics[width=0.9\linewidth,keepaspectratio]{hook-image.png}\\[4pt]
+      \footnotesize\textcolor{deepblue!60}{\textit{图片说明文字}}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+%% ── 第3页：路线图 ────────────────────────────────────────────
+\begin{frame}{研究路线 \sectag{Roadmap}}
+  \vspace{4pt}
+  \begin{center}
+  \begin{tikzpicture}[
+    node distance=1.5cm,
+    box/.style={draw=deepblue,fill=deepblue!8,rounded corners=4pt,
+                minimum width=2.5cm,minimum height=1.4cm,
+                text width=2.3cm,align=center,font=\small},
+    arr/.style={-{Stealth},thick,deepblue!70}]
+    \node[box] (n1) {\textbf{\S1}\\第一节\\{\tiny\EN{Section One}}};
+    \node[box,right=of n1] (n2) {\textbf{\S2}\\第二节\\{\tiny\EN{Section Two}}};
+    \node[box,right=of n2] (n3) {\textbf{\S3}\\第三节\\{\tiny\EN{Section Three}}};
+    \node[box,right=of n3] (n4) {\textbf{\S4}\\第四节\\{\tiny\EN{Section Four}}};
+    \draw[arr] (n1) -- (n2);
+    \draw[arr] (n2) -- (n3);
+    \draw[arr] (n3) -- (n4);
+  \end{tikzpicture}
+  \end{center}
+  \vspace{8pt}
+  \begin{columns}[c]
+    \begin{column}{0.55\textwidth}
+      \centering\small
+      \textcolor{deepblue!60}{\rule{\textwidth}{0.4pt}}\\[4pt]
+      \textit{"放一句统领全局的引言。"}\\[2pt]
+      \footnotesize — 引言来源
+    \end{column}
+    \begin{column}{0.42\textwidth}
+      \begin{alertblock}{\small 核心问题}
+        \footnotesize 本次汇报的核心研究问题是什么？
+      \end{alertblock}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+%% ── 内容页模板 ───────────────────────────────────────────────
+\begin{frame}{\S1\quad 第一节标题 \sectag{Section One}}
+  \begin{columns}[T]
+    \begin{column}{0.50\textwidth}
+      \begin{block}{子标题 \EN{Subtitle}}
+        \small 内容描述……\\[4pt]
+        \begin{itemize}\footnotesize
+          \item 要点一
+          \item 要点二
+          \item 要点三
+        \end{itemize}
+      \end{block}
+      \vspace{4pt}
+      \begin{exampleblock}{\small 示例 \EN{Example}}
+        \footnotesize 具体案例或数据……
+      \end{exampleblock}
+    \end{column}
+    \begin{column}{0.46\textwidth}
+      %% TikZ 因果图示例（DAG）
+      \begin{center}
+      \begin{tikzpicture}[scale=0.9,
+        node/.style={draw=deepblue!60,fill=deepblue!8,rounded corners=2pt,
+                     minimum width=1.2cm,minimum height=0.5cm,
+                     font=\small,align=center},
+        arr/.style={-{Stealth},thick,deepblue}]
+        \node[node] (x) at (0,0) {原因\\$X$};
+        \node[node] (y) at (3,0) {结果\\$Y$};
+        \draw[arr] (x) -- (y) node[midway,above,font=\footnotesize]{因果关系};
+      \end{tikzpicture}
+      \end{center}
+      \vspace{4pt}
+      \begin{alertblock}{\small 关键问题}
+        \footnotesize 在这里提出一个推动叙事的问题。
+      \end{alertblock}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+%% ── 综合页 ───────────────────────────────────────────────────
+\begin{frame}{综合：从 X 到 Y \sectag{Synthesis}}
+  \begin{columns}[T]
+    \begin{column}{0.50\textwidth}
+      \vspace{4pt}
+      %% 总结表格
+      \footnotesize
+      \begin{tabular}{>{\bfseries\color{deepblue}}p{1.8cm}p{2.0cm}p{2.0cm}}
+        \toprule
+        \textbf{理论} & \textbf{优势} & \textbf{局限} \\
+        \midrule\addlinespace
+        理论 A & 优势 1 & 局限 1 \\
+        理论 B & 优势 2 & 局限 2 \\
+        \addlinespace\bottomrule
+      \end{tabular}
+    \end{column}
+    \begin{column}{0.46\textwidth}
+      \begin{alertblock}{\small 综合视角 \EN{Synthesis}}
+        \footnotesize
+        \textbf{现象}：研究对象\\
+        \textbf{方法}：分析框架\\
+        \textbf{关键发现}：\\
+        \quad $\bullet$ 发现一\\
+        \quad $\bullet$ 发现二\\
+        \textbf{结论}：\alert{核心论点}
+      \end{alertblock}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+%% ── 讨论页 ───────────────────────────────────────────────────
+{
+\setbeamercolor{background canvas}{bg=lightbg}
+\begin{frame}{开放讨论 \sectag{Discussion}}
+  %% 可选：底图（需提供图片文件）
+  %% \begin{tikzpicture}[remember picture,overlay]
+  %%   \node[opacity=0.35,anchor=center] at (current page.center){%
+  %%     \includegraphics[width=\paperwidth,height=\paperheight,
+  %%       keepaspectratio=false]{ending-image.png}};
+  %%   \fill[lightbg,opacity=0.30]
+  %%     (current page.north west) rectangle (current page.south east);
+  %% \end{tikzpicture}
+  \begin{center}
+    {\large\textcolor{deepblue}{\textbf{思考题 · Discussion}}}
+  \end{center}
+  \vspace{4pt}
+  \begin{columns}[c]
+    \begin{column}{0.75\textwidth}
+      \begin{enumerate}\small
+        \item 第一个开放性讨论问题？\\[4pt]
+        \item \textcolor{deepblue}{\EN{Follow-up question:}}\\
+              \footnotesize 英文跟进问题或管理学视角？
+      \end{enumerate}
+      \vspace{10pt}
+      \centering
+      \footnotesize\textcolor{deepblue!60}{\rule{0.7\textwidth}{0.3pt}}\\[3pt]
+      小组成员：成员1 \textbullet{} 成员2 \textbullet{} 成员3\\[2pt]
+      课程名称 \textbullet{} 参考文献
+    \end{column}
+  \end{columns}
+\end{frame}
+}
+
+\end{document}

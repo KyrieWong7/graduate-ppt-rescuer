@@ -1,0 +1,30 @@
+---
+description: Unified contractor loop for paper, replication, and slide workflows.
+alwaysApply: true
+---
+
+# Orchestrator Protocol
+
+After plan approval, execute work through the same loop:
+
+`implement -> verify -> review -> fix -> re-verify -> score`
+
+## Module-Aware Review
+
+- **Empirical:** code review, replication, integrity checks
+- **Theory:** math audit, pseudocode review, code-vs-pseudocode review
+- **Writing:** proofread, referee-style review, prose review
+- **Slides:** visual audit, pedagogy review, Quarto QA critic/fixer
+
+## Limits
+
+- Main review loop: at most 5 rounds
+- Verification retry: at most 2 rounds before escalation
+- If blocked by user decisions, stop and create a checkpoint note
+
+## Deliverable Rule
+
+Do not report the job as complete until:
+- primary output renders or runs
+- major review findings are addressed
+- output format requested by the user is generated or explicitly blocked

@@ -1,0 +1,48 @@
+\frametitle{用户配置：\texttt {config.tex} \sectag {User Config}}
+\begin{columns}[T]
+    \begin{column}{0.54\textwidth}
+      \begin{Verbatim}[fontsize=\tiny,frame=single,
+                       rulecolor=\color{deepblue},
+                       label={\footnotesize config.tex}]
+%% CJK font
+%% macOS: Kaiti SC | Win: KaiTi | Linux: AR PL UKai CN
+\newcommand{\cjkfont}{Kaiti SC}
+
+%% Latin font
+\newcommand{\latinfont}{Times New Roman}
+
+%% Primary color — Preset A (Academic Blue)
+\definecolor{deepblue}{RGB}{0,52,102}
+%% Preset B (Forest Green) — uncomment:
+%% \definecolor{deepblue}{RGB}{0,80,60}
+%% Preset C (Purple) — uncomment:
+%% \definecolor{deepblue}{RGB}{60,20,100}
+
+%% Footer text
+\newcommand{\footleft}{Course · Topic}
+      \end{Verbatim}
+    \end{column}
+    \begin{column}{0.42\textwidth}
+      \begin{exampleblock}{\small 使用原则}
+        \footnotesize
+        \textbf{只修改 \texttt{config.tex}}\\
+        不动 \texttt{slides-template.tex} 本体\\[4pt]
+        Edit \texttt{config.tex} only.\\
+        Never touch the template body.
+      \end{exampleblock}
+      \vspace{4pt}
+      \begin{block}{\small 一处改，全局生效}
+        \footnotesize
+        \texttt{\textbackslash input\{config.tex\}} 在模板顶部\\
+        字体、配色、页脚一次性切换\\[2pt]
+        Single \texttt{\textbackslash input} at template top.\\
+        Font, color, footer all switch at once.
+      \end{block}
+      \vspace{4pt}
+      \begin{alertblock}{\small ppt-intake 自动生成}
+        \footnotesize
+        问卷回答后 AI 自动写入\\
+        \texttt{config.tex}，无需手动编辑
+      \end{alertblock}
+    \end{column}
+  \end{columns}

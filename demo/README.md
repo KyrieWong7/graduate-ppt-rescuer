@@ -1,73 +1,91 @@
-# Demo 示例说明
+# Demo: A Click is All You Need
+## 示例：A Click is All You Need
 
-本目录展示使用「研究生PPT汇报解救器」生成的真实学术汇报效果。
+This folder contains an 18-page bilingual presentation about the project itself, generated using this exact workflow. It is the best demonstration of the pipeline's capabilities.
 
-## 示例项目概述
+本文件夹包含一套 18 页的中英双语示例汇报，汇报主题正是本项目本身。它由本工作流自己的流水线生成——是对这套流程能力的最好展示。
 
-本工作流曾用于生成一份完整的课堂汇报，主题为**社会科学哲学中的因果与规律**，来源于一本学术专著的特定章节。
+---
 
-汇报规格：
-- 总页数：16 页
-- 汇报时长：约 8 分钟
-- 语言：中英文双语（楷体 + Times New Roman）
-- 叙事结构：以侦探推理为叙事暗线（非显式标注）
-- 图片：AI 生成配图 × 4
-- 附件：完整口播讲稿（script.pdf）
+## Files / 文件
 
-## 生成流程
-
-```
-素材：学术专著 PDF + 课程大纲 DOCX
-  ↓
-Step 1  AI 摄入素材，提取 16 个核心概念
-  ↓
-Step 2  搭建项目脚手架，从模板复制
-  ↓
-Step 3  AI 生成 16 页双语内容
-        — 包含 8 个 TikZ 图形（DAG、时间轴、三角图、网格图）
-  ↓
-Step 4  AI 生成 4 张配图（侦探主题，封面/钩子/高潮/结尾）
-  ↓
-Step 5  首次 XeLaTeX 编译（×2），确认无错误
-  ↓
-Step 6  质量审查：slide-auditor + tikz-reviewer + pedagogy-reviewer
-        — 发现并修复 3 个 Major 问题（TikZ 间距、引号渲染、桥接句缺失）
-  ↓
-Step 7  AI 生成完整 8 分钟讲稿（script.tex → script.pdf）
-  ↓
-Step 8  交付：slides.pdf（16页）+ script.pdf
-```
-
-总耗时（首次生成 + 审查修复）：约 3 次对话迭代。
-
-## 关键技术亮点
-
-- **引号渲染**：Unicode 弯引号（U+201C/U+201D）替代 ASCII 直引号，避免 CJK 字体引擎的间距异常
-- **图片叠加**：全页底图 + 透明度分层（opacity 0.38 + lightbg 遮罩 0.28）
-- **TikZ 布局**：8 种图形类型，包括因果 DAG、三角总览、Schelling 棋盘涌现图
-- **叙事结构**：侦探推理暗线贯穿 16 页，关键词隐性嵌入而非显式标注
-
-## 复现方法
-
-由于原始素材包含课程信息，完整源文件不在此公开。
-
-如需参考，可按以下方式使用本工作流生成类似的汇报：
-
-1. 准备你自己的学术 PDF 或 DOCX 素材
-2. 在 Cursor 中打开本仓库
-3. 运行 `bash setup.sh` 检查环境
-4. 对 AI 说："帮我基于 [你的文件名] 做一个汇报，16页，8分钟"
-5. 按 Plan 模式提示填写需求，确认计划后开始执行
-
-## 效果参考
-
-以下为生成的幻灯片部分特征（文字已脱敏）：
-
-| 页面 | 内容类型 | 图形元素 |
+| File | Description | 说明 |
 |---|---|---|
-| 封面 | 标题页 + 金色装饰线 | 全页底图叠加 |
-| 钩子 | 两栏对比 + 案件档案块 | AI 配图 × 2（上下排列）|
-| 路线图 | 4节流程图 + 引言 | TikZ 节点流程图 |
-| 内容节 | 双栏混排（文字 + 图） | TikZ DAG、时间轴 |
-| 综合页 | 钻石型汇聚图 + 对比表 | TikZ 多层结构图 |
-| 讨论页 | 开放问题 + 署名 | 全页底图叠加 |
+| `slides.tex` | LaTeX source — 18 slides | 幻灯片 LaTeX 源文件（18 页）|
+| `slides.pdf` | Compiled presentation | 编译好的幻灯片 PDF |
+| `script.tex` | Speaker script source | 讲稿 LaTeX 源文件 |
+| `script.pdf` | Compiled speaker script (9 pages) | 编译好的讲稿 PDF（9 页）|
+| `images/` | Demo-specific Chiikawa illustrations | 示例专属 Chiikawa 插图 |
+
+---
+
+## Slide-by-Slide Summary / 幻灯片逐页说明
+
+| Slide | Title | Key Elements 核心元素 |
+|---|---|---|
+| 1 | Cover 封面 | Full-page TikZ overlay + title + gold rule |
+| 2 | Hook: The Night Before 深夜的 Deadline | Two-column + image + gold quote + alertblock |
+| 3 | Roadmap 路线图 | TikZ horizontal 4-node flowchart |
+| 4 | S1: Three Pain Points 三大痛点 | block + alertblock + exampleblock + data |
+| 5 | 8-Stage Pipeline 流水线 | TikZ vertical 8-node pipeline + image |
+| 6 | Why Not Office? | booktabs 8-row comparison table + image |
+| 7 | Advantages A–D | block/alertblock 2-column card layout |
+| 8 | Advantages E–H | block/alertblock 2-column card layout |
+| 9 | Plan Mode Intake 摄入问卷 | exampleblock + alertblock + color swatches |
+| 10 | Content Generation 内容生成 | Two-column + itemize + alertblock |
+| 11 | Triple AI Review 三重审查 | TikZ triangle diagram + image + block |
+| 12 | Tech Spec: Fonts & Colors 技术规范 | TikZ color swatches + tabular + alertblock |
+| 13 | config.tex | fragile frame + Verbatim code block + 3 blocks |
+| 14 | Script Generation 讲稿机制 | Custom speakbox/notebox styling in slides |
+| 15 | Before vs After 效果对比 | multirow booktabs comparison table |
+| 16 | Delivery Spec 交付规范 | checkmark itemize + alertblock + block |
+| 17 | Credits 致谢 | Reference list + exampleblock + alertblock |
+| 18 | Ending 结尾 | Full-page background image + gold quote |
+
+---
+
+## How to Recompile / 如何重新编译
+
+```bash
+cd demo/
+xelatex -interaction=nonstopmode slides.tex
+xelatex -interaction=nonstopmode slides.tex   # second pass
+xelatex -interaction=nonstopmode script.tex
+xelatex -interaction=nonstopmode script.tex   # second pass
+```
+
+**Requirements / 环境要求:**
+- XeLaTeX (MacTeX / TeX Live)
+- Kaiti SC font (macOS system default / macOS 系统自带)
+- `config.tex` must be in `../templates/config.tex`
+
+---
+
+## Design Notes / 设计说明
+
+The demo was intentionally designed to showcase every major element type available in the template:
+
+示例 PPT 刻意设计为覆盖模板中所有主要元素类型：
+
+- **3 types of blocks** — `block` (blue), `alertblock` (brick red), `exampleblock` (teal)
+- **3 types of TikZ diagrams** — horizontal flowchart, vertical pipeline, triangle diagram
+- **2 types of tables** — `booktabs` comparison table, `multirow` tabular
+- **Fragile frame** with `Verbatim` code block
+- **Full-page background images** on cover and ending slides
+- **Two-column layouts** with image + text
+- **Color swatch grid** for typographic reference
+- **Gold quote styling** (`\textcolor{gold}{\textbf{\textit{...}}}`)
+
+---
+
+## Style Attribution / 风格来源
+
+The slide aesthetics follow conventions from:
+
+- **Pedro H.C. Sant'Anna** (Vanderbilt / Microsoft Research) — color palette, slide rhythm
+- **Isaiah Andrews** (Harvard) — content density, information hierarchy
+- **Till Tantau et al.** — *Beamer User Guide*, macro framework
+
+---
+
+*This demo was generated by the pipeline it describes. / 本示例由本项目工作流自己生成。*

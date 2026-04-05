@@ -1,26 +1,29 @@
 %% ============================================================
-%%  研究生PPT汇报解救器 · Beamer 幻灯片模板
-%%  引擎：XeLaTeX（必须，不支持 pdflatex）
-%%  编译：xelatex -interaction=nonstopmode slides.tex（两遍）
+%%  A Click is All You Need · Beamer 幻灯片模板
+%%  Graduate Seminar PPT Rescue Kit — Slide Template
+%%  ──────────────────────────────────────────────────────────
+%%  引擎 Engine:  XeLaTeX（必须，不支持 pdflatex / must use XeLaTeX）
+%%  编译 Compile: xelatex -interaction=nonstopmode slides.tex （两遍/twice）
+%%  ──────────────────────────────────────────────────────────
+%%  字体/配色请修改 config.tex，勿直接编辑此文件。
+%%  To change fonts or colors, edit config.tex only.
 %% ============================================================
 \documentclass[aspectratio=169,10pt]{beamer}
 
-%% ── 中英文字体配置 ───────────────────────────────────────────
+%% ── 用户配置（字体、配色、页脚）────────────────────────────
+%% 修改 config.tex 即可，无需改动模板本体。
+%% Edit config.tex to change fonts, colors, footer. Do not edit here.
+\input{config.tex}
+
+%% ── 中英文字体（由 config.tex 中的宏控制）───────────────────
 \usepackage[UTF8,scheme=plain]{ctex}
-\setCJKsansfont{Kaiti SC}       %% 中文：楷体（macOS 系统自带）
-\setCJKmainfont{Kaiti SC}       %% Windows/Linux：改为对应楷体字体名
-\setsansfont{Times New Roman}   %% 英文（Beamer 默认用 sans-serif）
-\setmainfont{Times New Roman}
+\setCJKsansfont{\cjkfont}
+\setCJKmainfont{\cjkfont}
+\setsansfont{\latinfont}
+\setmainfont{\latinfont}
 
 %% ── 主题与配色 ───────────────────────────────────────────────
 \usetheme{Boadilla}
-
-%% 自定义颜色（可按需调整 RGB 值）
-\definecolor{deepblue}{RGB}{0,52,102}    %% 主色：深蓝
-\definecolor{accent}{RGB}{196,72,49}     %% 强调色：砖红
-\definecolor{lightbg}{RGB}{240,245,252}  %% 浅背景蓝
-\definecolor{gold}{RGB}{180,140,40}      %% 金色（用于关键引言）
-\definecolor{darkgray}{RGB}{60,60,60}    %% 深灰
 
 \usecolortheme[named=deepblue]{structure}
 \setbeamercolor{frametitle}{bg=deepblue,fg=white}
@@ -49,7 +52,7 @@
   \hbox{%
     \begin{beamercolorbox}[wd=.72\paperwidth,ht=2.3ex,dp=1ex,leftskip=.4cm]{structure}%
       \usebeamerfont{footline}\footnotesize\color{deepblue!70}%
-      课程名称 \textbullet{} 章节标题%   ← 修改为实际课程和章节
+      \footleft%  ← 在 config.tex 中修改 / Edit \footleft in config.tex
     \end{beamercolorbox}%
     \begin{beamercolorbox}[wd=.28\paperwidth,ht=2.3ex,dp=1ex,rightskip=.4cm,right]{structure}%
       \usebeamerfont{footline}\footnotesize\color{deepblue!70}%

@@ -3,14 +3,16 @@ description: 检测到 PPT/汇报/slides/presentation 任务时，强制进入 p
 alwaysApply: false
 ---
 
-# PPT 需求摄入规则
+# PPT 需求摄入规则 / PPT Requirements Intake Rule
 
-## 触发条件
+## 触发条件 / Trigger
 
 当用户的请求涉及以下任何关键词时，本规则激活：
 - 汇报、PPT、slides、presentation、幻灯片、beamer、讲稿、做个PPT
 
-## 强制执行步骤
+Triggered by: report, PPT, slides, presentation, beamer, script, deck
+
+## 强制执行步骤 / Mandatory Steps
 
 **不得直接开始写代码或生成文件。** 必须按以下顺序执行：
 
@@ -24,22 +26,38 @@ alwaysApply: false
 - `MEMORY.md`（关键技术经验）
 - `WORKFLOW.md`（9 步工作流）
 
-### Step 3 — 用 AskQuestion 收集需求
+### Step 3 — 用 AskQuestion 收集需求（共 4 个维度）
 
-必须用 `AskQuestion` 工具收集以下信息（可合并为 2-3 个问题）：
+必须用 `AskQuestion` 工具收集以下信息（可合并为 2-3 个问题批次）：
 
-**问题一：内容与素材**
+**问题一：内容与素材 / Content & Materials**
 - 汇报主题是什么？（论文章节 / 课程内容 / 独立选题）
 - 有哪些现有素材？（PDF / DOCX / 笔记 / 暂无）
 
-**问题二：格式要求**
+**问题二：格式要求 / Format**
 - 目标页数和汇报时长？（如：16 页 / 8 分钟）
 - 是否需要中英双语？
 - 是否需要叙事主线？（如：侦探故事 / 案例研究 / 直述）
 
-**问题三：输出配置**
+**问题三：输出配置 / Output**
 - 是否需要 AI 生成配图？（需要 / 用户提供 / 不需要）
 - 是否需要完整讲稿（script.pdf）？
+
+**问题四：视觉风格 / Visual Style**
+- 主色系偏好？
+  - A. 深蓝 Deep Blue `RGB(0,52,102)` — 学术正式
+  - B. 深绿 Forest Green `RGB(0,80,60)` — 清新简洁
+  - C. 深紫 Academic Purple `RGB(60,20,100)` — 现代典雅
+  - D. 自定义 Custom（请提供 RGB 值或颜色名）
+- 中文字体偏好？
+  - 楷体 Kaiti SC — 正式传统（推荐学术汇报）
+  - 黑体 PingFang SC — 简洁现代
+  - 宋体 Songti SC — 古典庄重
+- 英文字体偏好？
+  - Times New Roman — 学术标准
+  - Helvetica Neue — 现代简洁
+  - Palatino — 优雅书卷
+- 是否需要生成 `config.tex` 预设文件供本次及后续同主题汇报复用？
 
 ### Step 4 — 生成需求摘要
 
@@ -64,12 +82,53 @@ alwaysApply: false
 - 配图：AI生成 / 用户提供 / 不需要
 - 讲稿：是/否
 
+## 视觉风格
+- 主色系：[颜色名] RGB([R],[G],[B])
+- 中文字体：[字体名]
+- 英文字体：[字体名]
+- config.tex 预设：是/否
+
 ## 人工确认节点
 - [ ] 幻灯片结构草案
+- [ ] 视觉风格预览（如自定义颜色）
 - [ ] 叙事主线确认（如有）
 ```
 
-### Step 5 — 生成执行计划
+### Step 5 — 写入 config.tex
+
+根据用户的视觉风格选择，生成或更新 `config.tex`：
+
+```latex
+%% ============================================================
+%%  用户配置区 User Configuration  ← 只需编辑此文件
+%%  Style inspired by Pedro H.C. Sant'Anna (Vanderbilt/Microsoft)
+%%  参考：Andrews (Harvard), Beamer Guide (Tantau et al.)
+%% ============================================================
+
+%% 中文字体 / CJK font
+%% macOS: Kaiti SC | Windows: KaiTi | Linux: AR PL UKai CN
+\newcommand{\cjkfont}{Kaiti SC}
+
+%% 英文字体 / Latin font
+\newcommand{\latinfont}{Times New Roman}
+
+%% 主色 / Primary color
+\definecolor{deepblue}{RGB}{0,52,102}
+
+%% 强调色 / Accent color
+\definecolor{accent}{RGB}{196,72,49}
+
+%% 金色引言 / Gold for key quotes
+\definecolor{gold}{RGB}{180,140,40}
+
+%% 页脚左侧文字 / Footer left text
+\newcommand{\footleft}{课程名称 · 汇报主题}
+
+%% 汇报人 / Presenter
+\newcommand{\presenter}{汇报人姓名}
+```
+
+### Step 6 — 生成执行计划
 
 调用 `CreatePlan` 工具，展示完整执行计划，**等待用户确认后再开始执行**。
 
